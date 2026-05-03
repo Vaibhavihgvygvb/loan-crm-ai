@@ -45,6 +45,7 @@ function App() {
   };
 
   const login = async () => {
+  try {
     const res = await fetch(`${API_BASE}/login`, {
       method: "POST",
       headers: {
@@ -58,13 +59,26 @@ function App() {
 
     const data = await res.json();
 
-    if (data.message === "Login successful") {
+    console.log("Login Response:", data);
+
+    if (data.user_id) {
       setLoggedIn(true);
       setLoggedInUserId(data.user_id);
+
+      localStorage.setItem(
+        "loggedInUserId",
+        data.user_id
+      );
     } else {
-      alert(data.message);
+      alert(data.message || "Login failed");
     }
-  };
+  } catch (error) {
+    console.error(error);
+    alert("Login error");
+  }
+};
+
+
 
   const applyLoan = async () => {
     const payload = {

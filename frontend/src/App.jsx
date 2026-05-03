@@ -214,6 +214,37 @@ function App() {
     <div className="min-h-screen bg-slate-950 text-white p-8">
       <div className="max-w-7xl mx-auto">
 
+        {/* Apply Loan Form */}
+        <div className="bg-slate-900 p-8 rounded-3xl">
+          <h2 className="text-2xl font-bold mb-6">
+            Apply for Loan
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            {Object.keys(loanData).map((field) => (
+              <input
+                key={field}
+                placeholder={field}
+                className="p-4 rounded-xl bg-slate-800"
+                onChange={(e) =>
+                  setLoanData({
+                    ...loanData,
+                    [field]: e.target.value,
+                  })
+                }
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={applyLoan}
+            className="mt-6 w-full py-4 rounded-xl bg-emerald-600"
+          >
+            Submit Application
+          </button>
+        </div>
+
+        {/* Actions */}
         <div className="grid md:grid-cols-3 gap-4 mt-8">
           <button
             onClick={loadRMDashboard}
@@ -237,34 +268,60 @@ function App() {
           </button>
         </div>
 
-        {rmData !== null && (
-          <div className="bg-slate-900 p-8 rounded-3xl mt-8">
-            <h2 className="text-xl font-bold mb-6">
-              RM Dashboard
-            </h2>
-
-            <div className="grid md:grid-cols-4 gap-4">
-              <div>Total: {rmData?.total_applications ?? 0}</div>
-              <div>Approved: {rmData?.approved_loans ?? 0}</div>
-              <div>Fraud: {rmData?.fraud_cases ?? 0}</div>
-              <div>
-                Avg: ₹
-                {Math.round(
-                  rmData?.average_recommended_loan ?? 0
-                )}
-              </div>
-            </div>
+        {/* Results */}
+        {result && (
+          <div className="mt-8">
+            <p>Approval: {result.approval_prediction}</p>
+            <p>Fraud: {result.fraud_prediction}</p>
+            <p>
+              Recommended Amount: ₹
+              {Math.round(result.recommended_loan_amount)}
+            </p>
           </div>
         )}
 
+        {/* Explanation */}
+        {explanation?.feature_impact && (
+          <div className="mt-8">
+            <h2 className="text-xl font-bold">
+              Decision Explanation
+            </h2>
+            {Object.entries(
+              explanation.feature_impact
+            ).map(([key, value]) => (
+              <div key={key}>
+                {key}: {value}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* RM Dashboard */}
+        {rmData && (
+          <div className="mt-8">
+            <h2 className="text-xl font-bold">
+              RM Dashboard
+            </h2>
+            <p>Total: {rmData?.total_applications ?? 0}</p>
+            <p>Approved: {rmData?.approved_loans ?? 0}</p>
+            <p>Fraud: {rmData?.fraud_cases ?? 0}</p>
+            <p>
+              Avg Loan: ₹
+              {Math.round(
+                rmData?.average_recommended_loan ?? 0
+              )}
+            </p>
+          </div>
+        )}
+
+        {/* Loan History */}
         {historyData?.applications && (
-          <div className="bg-slate-900 p-8 rounded-3xl mt-8">
-            <h2 className="text-xl font-bold mb-6">
+          <div className="mt-8">
+            <h2 className="text-xl font-bold">
               Loan History
             </h2>
-
             {historyData.applications.map((app) => (
-              <div key={app.id} className="mb-2">
+              <div key={app.id}>
                 Loan #{app.id} — ₹
                 {Math.round(app.recommended_loan_amount)}
               </div>
@@ -272,42 +329,18 @@ function App() {
           </div>
         )}
 
+        {/* RM Customers */}
         {rmCustomers?.customers && (
-          <div className="bg-slate-900 p-8 rounded-3xl mt-8">
-            <h2 className="text-xl font-bold mb-6">
+          <div className="mt-8">
+            <h2 className="text-xl font-bold">
               RM Customers
             </h2>
-
             {rmCustomers.customers.map((customer, index) => (
-              <div key={index} className="mb-2">
+              <div key={index}>
                 {customer.customer_name} — ₹
                 {Math.round(
                   customer.recommended_loan_amount
                 )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {result && (
-          <div className="mt-8">
-            <p>Approval: {result.approval_prediction}</p>
-            <p>Fraud: {result.fraud_prediction}</p>
-            <p>
-              Amount: ₹
-              {Math.round(result.recommended_loan_amount)}
-            </p>
-          </div>
-        )}
-
-        {explanation?.feature_impact && (
-          <div className="mt-8">
-            <h2>Decision Explanation</h2>
-            {Object.entries(
-              explanation.feature_impact
-            ).map(([key, value]) => (
-              <div key={key}>
-                {key}: {value}
               </div>
             ))}
           </div>

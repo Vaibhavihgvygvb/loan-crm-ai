@@ -32,7 +32,7 @@ function App() {
   const [rmCustomers, setRmCustomers] = useState(null);
 
   const register = async () => {
-    const res = await fetch(`${API}/register`, {
+    const res = await fetch(`${API_BASE}/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -45,7 +45,7 @@ function App() {
   };
 
   const login = async () => {
-    const res = await fetch(`${API}/login`, {
+    const res = await fetch(`${API_BASE}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -83,7 +83,7 @@ function App() {
       ),
     };
 
-    const res = await fetch(`${API}/apply-loan`, {
+    const res = await fetch(`${API_BASE}/apply-loan`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -95,7 +95,7 @@ function App() {
     setResult(data);
 
     const explainRes = await fetch(
-      `${API}/explain/loan-approval`,
+      `${API_BASE}/explain/loan-approval`,
       {
         method: "POST",
         headers: {
@@ -110,21 +110,21 @@ function App() {
   };
 
   const loadRMDashboard = async () => {
-    const res = await fetch(`${API}/rm/dashboard`);
+    const res = await fetch(`${API_BASE}/rm/dashboard`);
     const data = await res.json();
     setRmData(data);
   };
 
   const loadHistory = async () => {
     const res = await fetch(
-      `${API}/history/${loggedInUserId}`
+      `${API_BASE}/history/${loggedInUserId}`
     );
     const data = await res.json();
     setHistoryData(data);
   };
 
   const loadRMCustomers = async () => {
-    const res = await fetch(`${API}/rm/customers/`);
+    const res = await fetch(`${API_BASE}/rm/customers/`);
     const data = await res.json();
     setRmCustomers(data);
   };
@@ -205,7 +205,6 @@ function App() {
           </p>
         </div>
 
-        {/* Loan Form */}
         <div className="bg-slate-900 p-8 rounded-3xl border border-slate-800 shadow-xl">
           <h2 className="text-2xl font-semibold mb-6">
             Apply for Loan
@@ -235,7 +234,6 @@ function App() {
           </button>
         </div>
 
-        {/* Actions */}
         <div className="grid md:grid-cols-3 gap-4 mt-8">
           <button
             onClick={loadRMDashboard}
@@ -259,7 +257,6 @@ function App() {
           </button>
         </div>
 
-        {/* Results */}
         {result && (
           <div className="grid md:grid-cols-3 gap-6 mt-8">
             <div className="bg-slate-900 p-6 rounded-3xl">
@@ -294,191 +291,6 @@ function App() {
                   result.recommended_loan_amount
                 )}
               </p>
-            </div>
-          </div>
-        )}
-
-        {/* SHAP Table */}
-        {explanation && (
-          <div className="bg-slate-900 p-8 rounded-3xl mt-8">
-            <h2 className="text-xl font-bold mb-6">
-              Decision Explanation
-            </h2>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="border-b border-slate-700">
-                    <th className="py-3">Feature</th>
-                    <th className="py-3">Impact</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {Object.entries(
-                    explanation.feature_impact
-                  ).map(([key, value]) => (
-                    <tr
-                      key={key}
-                      className="border-b border-slate-800"
-                    >
-                      <td className="py-3">{key}</td>
-                      <td className="py-3">{value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* RM Dashboard */}
-        {rmData && (
-          <div className="bg-slate-900 p-8 rounded-3xl mt-8">
-            <h2 className="text-xl font-bold mb-6">
-              RM Dashboard
-            </h2>
-
-            <div className="grid md:grid-cols-4 gap-4">
-              <div className="bg-slate-800 p-4 rounded-xl">
-                Total: {rmData.total_applications}
-              </div>
-
-              <div className="bg-slate-800 p-4 rounded-xl">
-                Approved: {rmData.approved_loans}
-              </div>
-
-              <div className="bg-slate-800 p-4 rounded-xl">
-                Fraud: {rmData.fraud_cases}
-              </div>
-
-              <div className="bg-slate-800 p-4 rounded-xl">
-                Avg: ₹
-                {Math.round(
-                  rmData.average_recommended_loan
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Loan History Table */}
-        {historyData && (
-          <div className="bg-slate-900 p-8 rounded-3xl mt-8">
-            <h2 className="text-xl font-bold mb-6">
-              Loan History
-            </h2>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="border-b border-slate-700">
-                    <th className="py-3">ID</th>
-                    <th className="py-3">Approval</th>
-                    <th className="py-3">Fraud</th>
-                    <th className="py-3">
-                      Loan Amount
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {historyData.applications.map(
-                    (app) => (
-                      <tr
-                        key={app.id}
-                        className="border-b border-slate-800"
-                      >
-                        <td className="py-3">
-                          {app.id}
-                        </td>
-
-                        <td className="py-3">
-                          {app.approval_prediction === 1
-                            ? "Approved"
-                            : "Rejected"}
-                        </td>
-
-                        <td className="py-3">
-                          {app.fraud_prediction === 1
-                            ? "Fraud"
-                            : "Safe"}
-                        </td>
-
-                        <td className="py-3">
-                          ₹
-                          {Math.round(
-                            app.recommended_loan_amount
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* RM Customers Table */}
-        {rmCustomers && (
-          <div className="bg-slate-900 p-8 rounded-3xl mt-8">
-            <h2 className="text-xl font-bold mb-6">
-              RM Customer Applications
-            </h2>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="border-b border-slate-700">
-                    <th className="py-3">Name</th>
-                    <th className="py-3">Email</th>
-                    <th className="py-3">Approval</th>
-                    <th className="py-3">Fraud</th>
-                    <th className="py-3">
-                      Loan Amount
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {rmCustomers.customers.map(
-                    (customer, index) => (
-                      <tr
-                        key={index}
-                        className="border-b border-slate-800"
-                      >
-                        <td className="py-3">
-                          {customer.customer_name}
-                        </td>
-
-                        <td className="py-3">
-                          {customer.customer_email}
-                        </td>
-
-                        <td className="py-3">
-                          {customer.approval_prediction === 1
-                            ? "Approved"
-                            : "Rejected"}
-                        </td>
-
-                        <td className="py-3">
-                          {customer.fraud_prediction === 1
-                            ? "Fraud"
-                            : "Safe"}
-                        </td>
-
-                        <td className="py-3">
-                          ₹
-                          {Math.round(
-                            customer.recommended_loan_amount
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  )}
-                </tbody>
-              </table>
             </div>
           </div>
         )}

@@ -1,3 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Geist:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  background-color: #fafaf9;
+  color: #1c1917;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-heading {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+}
+
+.font-body {
+  font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-mono {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+:root {
+  --background: #fafaf9;
+  --foreground: #1c1917;
+  --card: #ffffff;
+  --primary: #064e3b;
+  --secondary: #f5f5f4;
+  --border: #e7e5e4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Fraunces', ui-serif, Georgia, serif;
+}
+
+.kpi-card {
+  @apply bg-white border border-stone-200 rounded-lg p-6;
+}
+
+.crm-input {
+  @apply w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm;
+}
+
+.crm-label {
+  @apply block text-xs font-medium text-stone-600 mb-1;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-900 text-white rounded-md;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-stone-300 rounded-md;
+}
+
+.surface-card {
+  @apply bg-white border border-stone-200 rounded-lg overflow-hidden;
+}
+
+.data-label {
+  @apply text-xs text-stone-500 uppercase;
+}
+
+.data-value {
+  @apply text-3xl font-bold text-stone-900;
+}
+
+::selection {
+  background: #064e3b;
+  color: white;
+}

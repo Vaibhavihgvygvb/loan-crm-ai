@@ -1,0 +1,45 @@
+
+Action: file_editor view /app/test_reports/iteration_1.json
+Observation: [Showing lines 1-41 of 41 total] /app/test_reports/iteration_1.json:
+1|{
+2|  "summary": "Frontend-only testing of Meridian Banking CRM. Registered a fresh user, navigated all 7 sidebar sections, verified dashboard KPIs + forecast + drift run. Loan Apply FAILS due to payload schema mismatch with external backend.",
+3|  "backend_issues": {
+4|    "critical": [
+5|      {"endpoint": "POST /apply-loan (external HF)", "issue": "Returns 422. Backend requires fields: debt_to_income_ratio, savings_ratio, job_stability_score (MISSING in frontend form) and user_id as INTEGER (not string). Frontend sends bank_policy_multiplier which backend does not accept.", "priority": "CRITICAL"},
+6|      {"endpoint": "POST /explain/loan-approval (external HF)", "issue": "Returns 500 — same schema mismatch; explainability chart never renders.", "priority": "CRITICAL"}
+7|    ],
+8|    "minor": []
+9|  },
+10|  "frontend_issues": {
+11|    "ui_bugs": [
+12|      {"component": "LoanApply", "issue": "Form is built from loanFields in /app/frontend/src/lib/api.js which lists 9 fields (including bank_policy_multiplier) but external backend actually requires 12 fields (8 overlap + debt_to_income_ratio, savings_ratio, job_stability_score; NO bank_policy_multiplier). Submission always fails with 422.", "selector": "[data-testid=\"loan-submit-button\"]", "priority": "CRITICAL"},
+13|      {"component": "LoanApply", "issue": "Sends user_id as string (from register response). Backend expects int — causes int_parsing error.", "selector": "[data-testid=\"loan-application-form\"]", "priority": "HIGH"}
+14|    ],
+15|    "integration_issues": [
+16|      {"flow": "Loan Application submit", "issue": "/apply-loan 422 and /explain/loan-approval 500; no result card or explainability chart shown. Only toast error 'Decision failed'.", "affected_selectors": ["[data-testid=\"loan-result-approval\"]", "[data-testid=\"loan-result-amount\"]", "[data-testid=\"explainability-card\"]"]}
+17|    ],
+18|    "design_issues": []
+19|  },
+20|  "test_report_links": [],
+21|  "action_items": [
+22|    "Fix /app/frontend/src/lib/api.js loanFields: REMOVE bank_policy_multiplier; ADD debt_to_income_ratio (0.0-1.0), savings_ratio (0.0-1.0), job_stability_score (0.0-1.0).",
+23|    "In /app/frontend/src/pages/LoanApply.jsx submit: cast user_id to Number before POST (payload.user_id = Number(user.user_id)). Also ensure only backend-accepted fields are sent.",
+24|    "Verify register/login response: the register endpoint likely returns user_id as integer — confirm auth stores it correctly for downstream calls."
+25|  ],
+26|  "critical_code_review_comments": [
+27|    "loanFields schema diverges from the actual HF backend contract — product spec said 9 fields but real API needs 12. E1 followed the spec; schema needs reconciling.",
+28|    "api.js does not coerce user_id type before sending — silently fails on numeric-only backends.",
+29|    "logout-button-header is lg:hidden; on desktop only sidebar logout-button is visible. Not a bug but worth noting (both exist).",
+30|    "No retry/backoff despite agent note warning about HF rate limits."
+31|  ],
+32|  "updated_files": [],
+33|  "success_rate": {"backend": "n/a (not tested)", "frontend": "80% (8/10 features fully pass; loan-apply + explainability broken)"},
+34|  "test_credentials": "Registered fresh: test_1777800632@meridian.bank / Test@1234. Registration worked; user_id persisted; dashboard, sidebar, history, customers, audit, forecast, drift all rendered successfully; drift-run returned features grid.",
+35|  "seed_data_creation": "One test user registered against external HF backend.",
+36|  "retest_needed": true,
+37|  "main_agent_can_self_test": true,
+38|  "context_for_next_testing_agent": "Auth flow + all navigation + drift + dashboard KPIs confirmed working against real external backend https://vaibhav991-loan-crm-ai.hf.space. Only Loan Apply broken — schema mismatch. After main agent fixes loanFields and user_id coercion, retest ONLY the loan-apply flow (fill form, submit, verify loan-result-approval / loan-result-amount / explainability-card).",
+39|  "rca of the issue": "External backend /apply-loan (Pydantic schema) expects user_id:int plus debt_to_income_ratio, savings_ratio, job_stability_score. Frontend sends user_id (likely string from register JSON) and includes bank_policy_multiplier which is not on the schema, and omits 3 required derived ratios. Reproduce: login, go to /loan-apply, fill any values, click Run Decision → toast 'Decision failed', console shows 422 + 500. Mitigation: update loanFields in api.js + cast user_id to Number in LoanApply.jsx submit handler."
+40|}
+41|
+[End of file]

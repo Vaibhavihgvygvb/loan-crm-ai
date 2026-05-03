@@ -45,40 +45,31 @@ function App() {
   };
 
   const login = async () => {
-  try {
-    const res = await fetch(`${API_BASE}/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: userData.email,
-        password: userData.password,
-      }),
-    });
+    try {
+      const res = await fetch(`${API_BASE}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: userData.email,
+          password: userData.password,
+        }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    console.log("Login Response:", data);
-
-    if (data.user_id) {
-      setLoggedIn(true);
-      setLoggedInUserId(data.user_id);
-
-      localStorage.setItem(
-        "loggedInUserId",
-        data.user_id
-      );
-    } else {
-      alert(data.message || "Login failed");
+      if (data.user_id) {
+        setLoggedIn(true);
+        setLoggedInUserId(data.user_id);
+      } else {
+        alert(data.message || "Login failed");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Login error");
     }
-  } catch (error) {
-    console.error(error);
-    alert("Login error");
-  }
-};
-
-
+  };
 
   const applyLoan = async () => {
     const payload = {
@@ -124,29 +115,41 @@ function App() {
   };
 
   const loadRMDashboard = async () => {
-    const res = await fetch(`${API_BASE}/rm/dashboard`);
-    const data = await res.json();
-    setRmData(data);
+    try {
+      const res = await fetch(`${API_BASE}/rm/dashboard`);
+      const data = await res.json();
+      setRmData({ ...data });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const loadHistory = async () => {
-    const res = await fetch(
-      `${API_BASE}/history/${loggedInUserId}`
-    );
-    const data = await res.json();
-    setHistoryData(data);
+    try {
+      const res = await fetch(
+        `${API_BASE}/history/${loggedInUserId}`
+      );
+      const data = await res.json();
+      setHistoryData({ ...data });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const loadRMCustomers = async () => {
-    const res = await fetch(`${API_BASE}/rm/customers/`);
-    const data = await res.json();
-    setRmCustomers(data);
+    try {
+      const res = await fetch(`${API_BASE}/rm/customers/`);
+      const data = await res.json();
+      setRmCustomers({ ...data });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   if (!loggedIn) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center px-6">
-        <div className="w-full max-w-md bg-slate-900 p-8 rounded-3xl shadow-2xl border border-slate-800">
+        <div className="w-full max-w-md bg-slate-900 p-8 rounded-3xl">
           <h1 className="text-3xl font-bold text-white text-center mb-8">
             Loan CRM AI
           </h1>
@@ -189,7 +192,7 @@ function App() {
 
           <button
             onClick={isLogin ? login : register}
-            className="w-full py-4 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-500 transition"
+            className="w-full py-4 rounded-xl bg-blue-600 text-white"
           >
             {isLogin ? "Login" : "Register"}
           </button>
@@ -210,43 +213,6 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-950 text-white p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold">
-            Loan Intelligence Dashboard
-          </h1>
-          <p className="text-slate-400">
-            AI-powered lending platform
-          </p>
-        </div>
-
-        <div className="bg-slate-900 p-8 rounded-3xl border border-slate-800 shadow-xl">
-          <h2 className="text-2xl font-semibold mb-6">
-            Apply for Loan
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            {Object.keys(loanData).map((field) => (
-              <input
-                key={field}
-                placeholder={field}
-                className="p-4 rounded-xl bg-slate-800"
-                onChange={(e) =>
-                  setLoanData({
-                    ...loanData,
-                    [field]: e.target.value,
-                  })
-                }
-              />
-            ))}
-          </div>
-
-          <button
-            onClick={applyLoan}
-            className="mt-6 w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500"
-          >
-            Submit Application
-          </button>
-        </div>
 
         <div className="grid md:grid-cols-3 gap-4 mt-8">
           <button
@@ -271,41 +237,79 @@ function App() {
           </button>
         </div>
 
-        {result && (
-          <div className="grid md:grid-cols-3 gap-6 mt-8">
-            <div className="bg-slate-900 p-6 rounded-3xl">
-              <h3 className="text-slate-400">
-                Approval Status
-              </h3>
-              <p className="text-2xl font-bold mt-2">
-                {result.approval_prediction === 1
-                  ? "Approved"
-                  : "Rejected"}
-              </p>
-            </div>
+        {rmData !== null && (
+          <div className="bg-slate-900 p-8 rounded-3xl mt-8">
+            <h2 className="text-xl font-bold mb-6">
+              RM Dashboard
+            </h2>
 
-            <div className="bg-slate-900 p-6 rounded-3xl">
-              <h3 className="text-slate-400">
-                Fraud Risk
-              </h3>
-              <p className="text-2xl font-bold mt-2">
-                {result.fraud_prediction === 1
-                  ? "High"
-                  : "Low"}
-              </p>
-            </div>
-
-            <div className="bg-slate-900 p-6 rounded-3xl">
-              <h3 className="text-slate-400">
-                Recommended Loan
-              </h3>
-              <p className="text-2xl font-bold mt-2">
-                ₹
+            <div className="grid md:grid-cols-4 gap-4">
+              <div>Total: {rmData?.total_applications ?? 0}</div>
+              <div>Approved: {rmData?.approved_loans ?? 0}</div>
+              <div>Fraud: {rmData?.fraud_cases ?? 0}</div>
+              <div>
+                Avg: ₹
                 {Math.round(
-                  result.recommended_loan_amount
+                  rmData?.average_recommended_loan ?? 0
                 )}
-              </p>
+              </div>
             </div>
+          </div>
+        )}
+
+        {historyData?.applications && (
+          <div className="bg-slate-900 p-8 rounded-3xl mt-8">
+            <h2 className="text-xl font-bold mb-6">
+              Loan History
+            </h2>
+
+            {historyData.applications.map((app) => (
+              <div key={app.id} className="mb-2">
+                Loan #{app.id} — ₹
+                {Math.round(app.recommended_loan_amount)}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {rmCustomers?.customers && (
+          <div className="bg-slate-900 p-8 rounded-3xl mt-8">
+            <h2 className="text-xl font-bold mb-6">
+              RM Customers
+            </h2>
+
+            {rmCustomers.customers.map((customer, index) => (
+              <div key={index} className="mb-2">
+                {customer.customer_name} — ₹
+                {Math.round(
+                  customer.recommended_loan_amount
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {result && (
+          <div className="mt-8">
+            <p>Approval: {result.approval_prediction}</p>
+            <p>Fraud: {result.fraud_prediction}</p>
+            <p>
+              Amount: ₹
+              {Math.round(result.recommended_loan_amount)}
+            </p>
+          </div>
+        )}
+
+        {explanation?.feature_impact && (
+          <div className="mt-8">
+            <h2>Decision Explanation</h2>
+            {Object.entries(
+              explanation.feature_impact
+            ).map(([key, value]) => (
+              <div key={key}>
+                {key}: {value}
+              </div>
+            ))}
           </div>
         )}
       </div>

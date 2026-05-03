@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 function App() {
-  const API = "http://127.0.0.1:8000";
+  const API_BASE = "https://vaibhav991-loan-crm-ai.hf.space";
 
   const [isLogin, setIsLogin] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);

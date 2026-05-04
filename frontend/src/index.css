@@ -34,6 +34,18 @@ body {
   --border: #e7e5e4;
 }
 
+input,
+textarea,
+select {
+  color: #111827;
+  background: white;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af;
+}
+
 * {
   box-sizing: border-box;
 }

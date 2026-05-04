@@ -38,6 +38,12 @@ body {
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
 h1,
 h2,
 h3,
@@ -48,11 +54,16 @@ h6 {
 }
 
 .kpi-card {
-  @apply bg-white border border-stone-200 rounded-lg p-6;
+  @apply bg-white border border-stone-200 rounded-lg p-6 shadow-sm;
 }
 
+/* FIXED INPUT STYLING */
 .crm-input {
-  @apply w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm;
+  @apply w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm text-black placeholder:text-stone-400 outline-none transition-all duration-200;
+}
+
+.crm-input:focus {
+  @apply border-emerald-700 ring-2 ring-emerald-200;
 }
 
 .crm-label {
@@ -60,19 +71,19 @@ h6 {
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-900 text-white rounded-md;
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-900 text-white rounded-md hover:bg-emerald-800 transition-colors;
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-stone-300 rounded-md;
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-stone-300 rounded-md hover:bg-stone-50 transition-colors;
 }
 
 .surface-card {
-  @apply bg-white border border-stone-200 rounded-lg overflow-hidden;
+  @apply bg-white border border-stone-200 rounded-lg overflow-hidden shadow-sm;
 }
 
 .data-label {
-  @apply text-xs text-stone-500 uppercase;
+  @apply text-xs text-stone-500 uppercase tracking-wide;
 }
 
 .data-value {

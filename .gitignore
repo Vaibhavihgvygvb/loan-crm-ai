@@ -1,4 +1,12 @@
 data/
 notebooks/
+node_modules/
+.next/
+.env
+.env.local
+dist/
+build/
+*.log
 __pycache__/
 .ipynb_checkpoints/
+.DS_Store
